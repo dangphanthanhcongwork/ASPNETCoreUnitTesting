@@ -23,10 +23,14 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task GetAll_ReturnsAllPersons()
+        public async Task GetAll_WhenCalled_ReturnsAllPersons()
         {
             // Arrange
-            var persons = new List<Person> { new Person(), new Person() };
+            var persons = new List<Person>
+                {
+                    new Person(),
+                    new Person()
+                };
             _personServiceMock.Setup(service => service.GetAll()).ReturnsAsync(persons);
 
             // Act
@@ -38,7 +42,7 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task Get_ReturnsPersonById()
+        public async Task Get_WhenCalled_ReturnsPersonById()
         {
             // Arrange
             var person = new Person();
@@ -54,7 +58,7 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task Add_AddsPersonSuccessfully()
+        public async Task Add_WhenCalled_AddsPersonSuccessfully()
         {
             // Arrange
             var person = new Person();
@@ -68,7 +72,7 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task Update_UpdatesPersonSuccessfully()
+        public async Task Update_WhenCalled_UpdatesPersonSuccessfully()
         {
             // Arrange
             var person = new Person();
@@ -82,7 +86,7 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task Delete_DeletesPersonSuccessfully()
+        public async Task Delete_WhenCalled_DeletesPersonSuccessfully()
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -96,14 +100,14 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task GetMales_ReturnsAllMales()
+        public async Task GetMales_WhenCalled_ReturnsAllMales()
         {
             // Arrange
             var males = new List<Person>
-    {
-        new Person { Gender = Gender.Male },
-        new Person { Gender = Gender.Male }
-    };
+                {
+                    new Person { Gender = Gender.Male },
+                    new Person { Gender = Gender.Male }
+                };
             _personServiceMock.Setup(service => service.GetMales()).ReturnsAsync(males);
 
             // Act
@@ -115,7 +119,7 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task GetOldest_ReturnsOldestPerson()
+        public async Task GetOldest_WhenCalled_ReturnsOldestPerson()
         {
             // Arrange
             var oldest = new Person { DateOfBirth = new DateTime(1950, 1, 1) };
@@ -130,7 +134,7 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task GetFullNames_ReturnsAllFullNames()
+        public async Task GetFullNames_WhenCalled_ReturnsAllFullNames()
         {
             // Arrange
             var fullNames = new List<string> { "John Doe", "Jane Doe" };
@@ -145,16 +149,15 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task GetByBirthYear_ReturnsPersonsByBirthYear()
+        public async Task GetByBirthYear_WhenCalled_ReturnsPersonsByBirthYear()
         {
             // Arrange
             var year = 1990;
             var persons = new List<Person>
-    {
-        new Person { DateOfBirth = new DateTime(year, 1, 1) },
-        new Person { DateOfBirth = new DateTime(year, 12, 31) }
-    };
-
+                {
+                    new Person { DateOfBirth = new DateTime(year, 1, 1) },
+                    new Person { DateOfBirth = new DateTime(year, 12, 31) }
+                };
             _personServiceMock.Setup(service => service.GetByBirthYear(year)).ReturnsAsync(persons);
 
             // Act
@@ -166,16 +169,15 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task GetByBirthYearGreaterThan_ReturnsPersonsByBirthYearGreaterThan()
+        public async Task GetByBirthYearGreaterThan_WhenCalled_ReturnsPersonsByBirthYearGreaterThan()
         {
             // Arrange
             var year = 1999;
             var persons = new List<Person>
-    {
-        new Person { DateOfBirth = new DateTime(year+1, 1, 1) },
-        new Person { DateOfBirth = new DateTime(year+2, 12, 31) }
-    };
-
+                {
+                    new Person { DateOfBirth = new DateTime(year + 1, 1, 1) },
+                    new Person { DateOfBirth = new DateTime(year + 2, 12, 31) }
+                };
             _personServiceMock.Setup(service => service.GetByBirthYearGreaterThan(year)).ReturnsAsync(persons);
 
             // Act
@@ -187,15 +189,15 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task GetByBirthYearLessThan_ReturnsPersonsByBirthYearLessThan()
+        public async Task GetByBirthYearLessThan_WhenCalled_ReturnsPersonsByBirthYearLessThan()
         {
             // Arrange
             var year = 1990;
             var persons = new List<Person>
-    {
-        new Person { DateOfBirth = new DateTime(year-1, 1, 1) },
-        new Person { DateOfBirth = new DateTime(year-2, 12, 31) }
-    };
+                {
+                    new Person { DateOfBirth = new DateTime(year - 1, 1, 1) },
+                    new Person { DateOfBirth = new DateTime(year - 2, 12, 31) }
+                };
 
             _personServiceMock.Setup(service => service.GetByBirthYearLessThan(year)).ReturnsAsync(persons);
 
@@ -208,10 +210,14 @@ namespace WebApplication.Tests
         }
 
         [Test]
-        public async Task ExportToExcel_ReturnsExcelFile()
+        public async Task ExportToExcel_WhenCalled_ReturnsExcelFile()
         {
             // Arrange
-            var persons = new List<Person> { new Person(), new Person() };
+            var persons = new List<Person>
+                {
+                    new Person(),
+                    new Person()
+                };
             _personServiceMock.Setup(service => service.GetAll()).ReturnsAsync(persons);
 
             // Act
