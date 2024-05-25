@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Data;
 using WebApplication.Models;
@@ -17,36 +13,53 @@ namespace WebApplication.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Person>> GetAll()
+        public async Task<IEnumerable<Person>> GetPersons()
         {
             return await _context.Persons.ToListAsync();
         }
 
-        public async Task<Person> Get(Guid id)
+        public async Task<Person> GetPerson(Guid id)
         {
-            return await _context.Persons.FindAsync(id);
+            var person = await _context.Persons.FindAsync(id) ?? throw new Exception("Not found!!!");
+            return person;
         }
 
-        public async Task Add(Person person)
+        public async Task PutPerson(Guid id, Person person)
+        {
+            _context.Persons.Entry(person).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await PersonExists(id))
+                {
+                    throw new Exception("Not found!!!");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        public async Task PostPerson(Person person)
         {
             _context.Persons.Add(person);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(Person person)
+        public async Task DeletePerson(Guid id)
         {
-            _context.Entry(person).State = EntityState.Modified;
+            var person = await _context.Persons.FindAsync(id) ?? throw new Exception("Not found!!!");
+            _context.Persons.Remove(person);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(Guid id)
+        public async Task<bool> PersonExists(Guid id)
         {
-            var person = await _context.Persons.FindAsync(id);
-            if (person != null)
-            {
-                _context.Persons.Remove(person);
-                await _context.SaveChangesAsync();
-            }
+            return await _context.Persons.AnyAsync(e => e.Id == id);
         }
 
         public async Task<IEnumerable<Person>> GetMales()
@@ -54,14 +67,9 @@ namespace WebApplication.Repositories
             return await _context.Persons.Where(p => p.Gender == Gender.Male).ToListAsync();
         }
 
-        public async Task<Person> GetOldest()
+        public async Task<IEnumerable<Person>> GetOldest()
         {
-            return await _context.Persons.OrderByDescending(p => p.DateOfBirth).FirstOrDefaultAsync();
-        }
-
-        public async Task<IEnumerable<String>> GetFullNames()
-        {
-            return await _context.Persons.Select(p => p.FullName).ToListAsync();
+            return [await _context.Persons.OrderBy(p => p.DateOfBirth).FirstOrDefaultAsync()];
         }
 
         public async Task<IEnumerable<Person>> GetByBirthYear(int year)

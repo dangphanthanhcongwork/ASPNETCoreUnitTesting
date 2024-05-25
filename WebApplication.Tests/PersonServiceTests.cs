@@ -1,203 +1,193 @@
+using NUnit.Framework;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using Moq;
 using WebApplication.Models;
-using WebApplication.Repositories;
 using WebApplication.Services;
+using WebApplication.Repositories;
 
 namespace WebApplication.Tests
 {
-    [TestFixture]
     public class PersonServiceTests
     {
-        private Mock<IPersonRepository> _mockPersonRepository;
-        private IPersonService _personService;
+        private Mock<IPersonRepository> _repositoryMock;
+        private PersonService _service;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
-            _mockPersonRepository = new Mock<IPersonRepository>();
-            _personService = new PersonService(_mockPersonRepository.Object);
+            _repositoryMock = new Mock<IPersonRepository>();
+            _service = new PersonService(_repositoryMock.Object);
         }
 
         [Test]
-        public async Task GetAll_WhenCalled_ReturnsAllPersons()
+        public async Task GetPersons_WhenCalled_ReturnsExpectedResult()
         {
             // Arrange
             var persons = new List<Person>
                 {
-                    new Person(),
-                    new Person()
+                    new() { FirstName = "firstName 1", LastName = "lastName1", PhoneNumber = "xxxx.xxx.xx1"},
+                    new() { FirstName = "firstName 2", LastName = "lastName2", PhoneNumber = "xxxx.xxx.xx2"},
                 };
-            _mockPersonRepository.Setup(repo => repo.GetAll()).ReturnsAsync(persons);
+            _repositoryMock.Setup(repo => repo.GetPersons()).ReturnsAsync(persons);
 
             // Act
-            var result = await _personService.GetAll();
+            var result = await _service.GetPersons();
 
             // Assert
             Assert.That(result, Is.EqualTo(persons));
         }
 
         [Test]
-        public async Task Get_WhenCalled_ReturnsPersonById()
+        public async Task GetPerson_WhenCalled_ReturnsExpectedResult()
         {
             // Arrange
-            var person = new Person { Id = Guid.NewGuid() };
-            _mockPersonRepository.Setup(repo => repo.Get(person.Id)).ReturnsAsync(person);
+            var person = new Person { FirstName = "firstName", LastName = "lastName", PhoneNumber = "xxxx.xxx.xxx" };
+            var id = Guid.NewGuid();
+            _repositoryMock.Setup(repo => repo.GetPerson(id)).ReturnsAsync(person);
 
             // Act
-            var result = await _personService.Get(person.Id);
+            var result = await _service.GetPerson(id);
 
             // Assert
             Assert.That(result, Is.EqualTo(person));
         }
 
         [Test]
-        public async Task Add_WhenCalled_AddsPersonSuccessfully()
+        public async Task PutPerson_WhenCalled_ExecutesSuccessfully()
         {
             // Arrange
-            var person = new Person();
-            _mockPersonRepository.Setup(repo => repo.Add(person)).Returns(Task.CompletedTask);
+            var person = new Person { FirstName = "firstName", LastName = "lastName", PhoneNumber = "xxxx.xxx.xxx" };
+            var id = Guid.NewGuid();
+            _repositoryMock.Setup(repo => repo.PutPerson(id, person)).Returns(Task.CompletedTask);
 
             // Act
-            await _personService.Add(person);
+            await _service.PutPerson(id, person);
 
             // Assert
-            _mockPersonRepository.Verify(repo => repo.Add(person), Times.Once);
+            _repositoryMock.Verify(repo => repo.PutPerson(id, person), Times.Once);
         }
 
         [Test]
-        public async Task Update_WhenCalled_UpdatesPersonSuccessfully()
+        public async Task PostPerson_WhenCalled_ExecutesSuccessfully()
         {
             // Arrange
-            var person = new Person();
-            _mockPersonRepository.Setup(repo => repo.Update(person)).Returns(Task.CompletedTask);
+            var person = new Person { FirstName = "firstName", LastName = "lastName", PhoneNumber = "xxxx.xxx.xxx" };
+            _repositoryMock.Setup(repo => repo.PostPerson(person)).Returns(Task.CompletedTask);
 
             // Act
-            await _personService.Update(person);
+            await _service.PostPerson(person);
 
             // Assert
-            _mockPersonRepository.Verify(repo => repo.Update(person), Times.Once);
+            _repositoryMock.Verify(repo => repo.PostPerson(person), Times.Once);
         }
 
         [Test]
-        public async Task Delete_WhenCalled_DeletesPersonSuccessfully()
+        public async Task DeletePerson_WhenCalled_ExecutesSuccessfully()
         {
             // Arrange
             var id = Guid.NewGuid();
-            _mockPersonRepository.Setup(repo => repo.Delete(id)).Returns(Task.CompletedTask);
+            _repositoryMock.Setup(repo => repo.DeletePerson(id)).Returns(Task.CompletedTask);
 
             // Act
-            await _personService.Delete(id);
+            await _service.DeletePerson(id);
 
             // Assert
-            _mockPersonRepository.Verify(repo => repo.Delete(id), Times.Once);
+            _repositoryMock.Verify(repo => repo.DeletePerson(id), Times.Once);
         }
 
         [Test]
-        public async Task GetMales_WhenCalled_ReturnsAllMales()
+        public async Task GetMales_WhenCalled_ReturnsExpectedResult()
         {
             // Arrange
             var males = new List<Person>
                 {
-                    new Person { Gender = Gender.Male },
-                    new Person { Gender = Gender.Male }
+                    new() { FirstName = "firstName 1", LastName = "lastName1", PhoneNumber = "xxxx.xxx.xx1"},
+                    new() { FirstName = "firstName 2", LastName = "lastName2", PhoneNumber = "xxxx.xxx.xx2"},
                 };
-            _mockPersonRepository.Setup(repo => repo.GetMales()).ReturnsAsync(males);
+            _repositoryMock.Setup(repo => repo.GetMales()).ReturnsAsync(males);
 
             // Act
-            var result = await _personService.GetMales();
+            var result = await _service.GetMales();
 
             // Assert
             Assert.That(result, Is.EqualTo(males));
         }
 
         [Test]
-        public async Task GetOldest_WhenCalled_ReturnsOldestPerson()
+        public async Task GetOldest_WhenCalled_ReturnsExpectedResult()
         {
             // Arrange
-            var oldest = new Person { DateOfBirth = new DateTime(1950, 1, 1) };
-            _mockPersonRepository.Setup(repo => repo.GetOldest()).ReturnsAsync(oldest);
+            var oldest = new List<Person>
+                {
+                    new() { FirstName = "firstName 1", LastName = "lastName1", PhoneNumber = "xxxx.xxx.xx1"},
+                    new() { FirstName = "firstName 2", LastName = "lastName2", PhoneNumber = "xxxx.xxx.xx2"},
+                };
+            _repositoryMock.Setup(repo => repo.GetOldest()).ReturnsAsync(oldest);
 
             // Act
-            var result = await _personService.GetOldest();
+            var result = await _service.GetOldest();
 
             // Assert
             Assert.That(result, Is.EqualTo(oldest));
         }
 
         [Test]
-        public async Task GetFullNames_WhenCalled_ReturnsAllFullNames()
+        public async Task GetByBirthYear_WhenCalled_ReturnsExpectedResult()
         {
             // Arrange
-            var fullNames = new List<string> { "John Doe", "Jane Doe" };
-            _mockPersonRepository.Setup(repo => repo.GetFullNames()).ReturnsAsync(fullNames);
-
-            // Act
-            var result = await _personService.GetFullNames();
-
-            // Assert
-            Assert.That(result, Is.EqualTo(fullNames));
-        }
-
-        [Test]
-        public async Task GetByBirthYear_WhenCalled_ReturnsPersonsByBirthYear()
-        {
-            // Arrange
-            var year = 1990;
             var persons = new List<Person>
                 {
-                    new Person { DateOfBirth = new DateTime(year, 1, 1) },
-                    new Person { DateOfBirth = new DateTime(year, 12, 31) }
+                    new() { FirstName = "firstName 1", LastName = "lastName1", PhoneNumber = "xxxx.xxx.xx1"},
+                    new() { FirstName = "firstName 2", LastName = "lastName2", PhoneNumber = "xxxx.xxx.xx2"},
                 };
-            _mockPersonRepository.Setup(repo => repo.GetByBirthYear(year)).ReturnsAsync(persons);
+            var year = 2000;
+            _repositoryMock.Setup(repo => repo.GetByBirthYear(year)).ReturnsAsync(persons);
 
             // Act
-            var result = await _personService.GetByBirthYear(year);
+            var result = await _service.GetByBirthYear(year);
 
             // Assert
             Assert.That(result, Is.EqualTo(persons));
         }
 
         [Test]
-        public async Task GetByBirthYearGreaterThan_WhenCalled_ReturnsPersonsByBirthYearGreaterThan()
+        public async Task GetByBirthYearGreaterThan_WhenCalled_ReturnsExpectedResult()
         {
             // Arrange
+            var persons = new List<Person>
+                {
+                    new() { FirstName = "firstName 1", LastName = "lastName1", PhoneNumber = "xxxx.xxx.xx1"},
+                    new() { FirstName = "firstName 2", LastName = "lastName2", PhoneNumber = "xxxx.xxx.xx2"},
+                };
+            var year = 2001;
+            _repositoryMock.Setup(repo => repo.GetByBirthYearGreaterThan(year)).ReturnsAsync(persons);
+
+            // Act
+            var result = await _service.GetByBirthYearGreaterThan(year);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(persons));
+        }
+
+        [Test]
+        public async Task GetByBirthYearLessThan_WhenCalled_ReturnsExpectedResult()
+        {
+            // Arrange
+            var persons = new List<Person>
+                {
+                    new() { FirstName = "firstName 1", LastName = "lastName1", PhoneNumber = "xxxx.xxx.xx1"},
+                    new() { FirstName = "firstName 2", LastName = "lastName2", PhoneNumber = "xxxx.xxx.xx2"},
+                };
             var year = 1999;
-            var persons = new List<Person>
-                {
-                    new Person { DateOfBirth = new DateTime(year + 1, 1, 1) },
-                    new Person { DateOfBirth = new DateTime(year + 2, 12, 31) }
-                };
-            _mockPersonRepository.Setup(repo => repo.GetByBirthYearGreaterThan(year)).ReturnsAsync(persons);
+            _repositoryMock.Setup(repo => repo.GetByBirthYearLessThan(year)).ReturnsAsync(persons);
 
             // Act
-            var result = await _personService.GetByBirthYearGreaterThan(year);
+            var result = await _service.GetByBirthYearLessThan(year);
 
             // Assert
             Assert.That(result, Is.EqualTo(persons));
         }
-
-        [Test]
-        public async Task GetByBirthYearLessThan_WhenCalled_ReturnsPersonsByBirthYearLessThan()
-        {
-            // Arrange
-            var year = 1990;
-            var persons = new List<Person>
-                {
-                    new Person { DateOfBirth = new DateTime(year - 1, 1, 1) },
-                    new Person { DateOfBirth = new DateTime(year - 2, 12, 31) }
-                };
-            _mockPersonRepository.Setup(repo => repo.GetByBirthYearLessThan(year)).ReturnsAsync(persons);
-
-            // Act
-            var result = await _personService.GetByBirthYearLessThan(year);
-
-            // Assert
-            Assert.That(result, Is.EqualTo(persons));
-        }
-
     }
 }

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using WebApplication.Models;
 using WebApplication.Repositories;
 
@@ -8,66 +5,82 @@ namespace WebApplication.Services
 {
     public class PersonService : IPersonService
     {
-        private readonly IPersonRepository _personRepository;
+        private readonly IPersonRepository _repository;
 
-        public PersonService(IPersonRepository personRepository)
+        public PersonService(IPersonRepository repository)
         {
-            _personRepository = personRepository;
+            _repository = repository;
         }
 
-        public Task<IEnumerable<Person>> GetAll()
+        public async Task<IEnumerable<Person>> GetPersons()
         {
-            return _personRepository.GetAll();
+            return await _repository.GetPersons();
         }
 
-        public Task<Person> Get(Guid id)
+        public async Task<Person> GetPerson(Guid id)
         {
-            return _personRepository.Get(id);
+            try
+            {
+                return await _repository.GetPerson(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public Task Add(Person person)
+        public async Task PutPerson(Guid id, Person person)
         {
-            return _personRepository.Add(person);
+            try
+            {
+                await _repository.PutPerson(id, person);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public Task Update(Person person)
+        public async Task PostPerson(Person person)
         {
-            return _personRepository.Update(person);
+            await _repository.PostPerson(person);
         }
 
-        public Task Delete(Guid id)
+        public async Task DeletePerson(Guid id)
         {
-            return _personRepository.Delete(id);
+            try
+            {
+                await _repository.DeletePerson(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public Task<IEnumerable<Person>> GetMales()
         {
-            return _personRepository.GetMales();
+            return _repository.GetMales();
         }
 
-        public Task<Person> GetOldest()
+        public Task<IEnumerable<Person>> GetOldest()
         {
-            return _personRepository.GetOldest();
-        }
-
-        public Task<IEnumerable<String>> GetFullNames()
-        {
-            return _personRepository.GetFullNames();
+            return _repository.GetOldest();
         }
 
         public Task<IEnumerable<Person>> GetByBirthYear(int year)
         {
-            return _personRepository.GetByBirthYear(year);
+            return _repository.GetByBirthYear(year);
         }
 
         public Task<IEnumerable<Person>> GetByBirthYearGreaterThan(int year)
         {
-            return _personRepository.GetByBirthYearGreaterThan(year);
+            return _repository.GetByBirthYearGreaterThan(year);
         }
 
         public Task<IEnumerable<Person>> GetByBirthYearLessThan(int year)
         {
-            return _personRepository.GetByBirthYearLessThan(year);
+            return _repository.GetByBirthYearLessThan(year);
         }
     }
 }
